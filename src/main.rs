@@ -13,6 +13,4 @@ fn main() {
 
     let mut cpu = CPU::new();
     cpu.tick();
-    cpu.tick();
-    cpu.tick();
 }
