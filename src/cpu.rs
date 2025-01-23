@@ -5,6 +5,7 @@ use std::{mem::offset_of, usize};
 
 use rand::Rng;
 
+use crate::display;
 use crate::memory::Memory;
 
 enum PCBypass {
