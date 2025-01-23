@@ -3,6 +3,8 @@
  */
 use std::{mem::offset_of, usize};
 
+use rand::Rng;
+
 use crate::memory::Memory;
 
 enum PCBypass {
@@ -115,7 +117,25 @@ impl CPU {
                         self.registers[reg_x] = x - y;
                         self.vf = if x > y { 1 } else { 0 };
                     }
-
+                    6 => {
+                        let cur_x = self.registers[reg_x];
+                        if (cur_x & 1) != 0 {
+                            self.vf = 1;
+                        }
+                        self.registers[reg_x] >>= 1;
+                    }
+                    7 => {
+                        // SUB
+                        self.registers[reg_x] = y - x;
+                        self.vf = if y > x { 1 } else { 0 };
+                    }
+                    0xE => {
+                        let cur_x = self.registers[reg_x];
+                        if (cur_x & 1) != 0 {
+                            self.vf = 1;
+                        }
+                        self.registers[reg_x] <<= 1;
+                    }
                     _ => {}
                 }
             }
@@ -123,12 +143,17 @@ impl CPU {
                 let addr = instruction & 0x0FFF;
                 self.ind = addr;
             }
+            0xC => {
+                let reg_x = ((instruction & 0x0F00) >> 8) as usize;
+                let nn = (instruction & 0xFF) as u8;
+                self.registers[reg_x] = rand::thread_rng().gen::<u8>() & nn;
+            }
             0xD => {
                 let reg_x = ((instruction & 0x0F00) >> 8) as usize;
                 let reg_y = ((instruction & 0x00F0) >> 4) as usize;
 
-                let x = self.registers[reg_x as usize];
-                let y = self.registers[reg_y as usize];
+                let x = self.registers[reg_x];
+                let y = self.registers[reg_y];
                 let n = (instruction & 0xF) as usize;
 
                 todo!("Requires the Display to work already")
