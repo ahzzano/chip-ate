@@ -16,6 +16,9 @@ impl C8Display {
     pub fn clear_screen(&mut self) {
         self.display_array = [0; 64 * 32];
     }
+    pub fn get_display(&self) -> &[u8; 64 * 32] {
+        &self.display_array
+    }
 }
 
 #[cfg(test)]
